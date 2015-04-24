@@ -31,16 +31,20 @@ model1 = aov(value ~ grids*hemisphere +
              data=molten9)
 summary(model1)
 
+modelHLM = lmer(value ~ grids * hemisphere + (1|Subject), data=molten9)
+summary(modelHLM)
+Anova(modelHLM, type="III")
+
 # d. 95% CI for condition effect just within the left hemisphere
   # filter the data just for hemisphere == left
-molten.LH = subset(molten, hemisphere == "left")
-model2 = aov(value ~ grids + Error(Subject/grids), data=molten)
+molten.LH = subset(molten9, hemisphere == "left")
+model2 = aov(value ~ grids + Error(Subject/grids), data=molten.LH)
 summary(model2)
 
 
 dat17=read.table("chapter_12_exercise_17.dat")
 # Add column names
-names(dat17) = c("Day1", "Day2", "Day3", "Day4", "Group")
+names(dat17) <- c("Day1", "Day2", "Day3", "Day4", "Group")
 # Add column of subject numbers
 dat17$Subject = 1:14
 # This time when we melt, we want to keep "Group" as an ID variable
@@ -50,6 +54,7 @@ molten17
 # note what happens if we don't keep Group as an ID variable
 melt(dat17, id.vars=c("Subject"))
 # Now we can fit our ANOVA
+molten17$Group = as.factor(molten17$Group)
 model17=aov(value ~ Group*variable + Error(Subject/variable),
             dat = molten17)
 summary(model17)
