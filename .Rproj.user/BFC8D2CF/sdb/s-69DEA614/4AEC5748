@@ -1,0 +1,16 @@
+{
+    "contents" : "library(reshape2) # tidyr is nicer but your laptops have too-old an R version\n\n\ndat9 =read.table(\"chapter_12_exercise_9.dat\")\nnames(dat9) = c(\"LH-Grids\", \"RH-Grids\", \"LH-Brackets\", \"RH-Brackets\") # name the conditions\ndat9$Subject = 1:10 # add a column of subject numbers\n# So what's our problem? The data aren't tidy!\n  # We have several observations per row.\n  # We want one observation per row.\n# Let's first pound the data flat.\n  # in reshape2 the function is melt(),\n  # in tidyr the function is gather()\nmolten = melt(dat9, id.vars=\"Subject\")\n# Now our \"variable\" column really represents information we want in two columns.\n  # One column for \"hemisphere\"\n  # One column for grids/brackets.\n# If we had tidyr we could use separate() to tear \"variable\" into two columns.\n# Here we'll use grep().\nmolten$hemisphere = NA\nmolten$hemisphere[grep(\"LH\", molten$variable)] = \"left\"\nmolten$hemisphere[grep(\"RH\", molten$variable)] = \"right\"\n# and again for grids\nmolten$grids = NA\nmolten$grids[grep(\"Grids\", molten$variable)] = \"grids\"\nmolten$grids[grep(\"Brackets\", molten$variable)] = \"brackets\"\n\n# okay! So now it's finally tidy!\n# Now we can run our model.\nmodel1 = aov(value ~ grids*hemisphere + Error(Subject/(hemisphere*grids)), data=molten)\nsummary(model1)\n# d. 95% CI for condition effect just within the left hemisphere\n  # filter the data just for hemisphere == left\nmolten.LH = subset(molten, hemisphere == \"left\")\nmodel2 = aov(value ~ grids + Error(Subject/grids), data=molten)\nsummary(model2)\n\n\ndat17=read.table(\"chapter_12_exercise_17.dat\")\ndat18=read.table(\"chapter_12_exercise_18.dat\")\ndat19=read.table(\"chapter_12_exercise_19.dat\")\n\n",
+    "created" : 1429892343592.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1749053727",
+    "id" : "4AEC5748",
+    "lastKnownWriteTime" : 1429893491,
+    "path" : "~/GitHub/MD/ANOVA.r",
+    "project_path" : "ANOVA.r",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
